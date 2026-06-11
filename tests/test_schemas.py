@@ -20,6 +20,7 @@ _REQUIRED_OUTPUT_FIELDS = [
     "testing_plan",
     "executive_summary",
     "delivery_status_report",
+    "delivery_team",
 ]
 
 
@@ -85,5 +86,5 @@ class TestPromptTemplate:
         missing = [f for f in _REQUIRED_OUTPUT_FIELDS if f not in SYSTEM_PROMPT]
         assert not missing, (
             f"SYSTEM_PROMPT is missing output field references: {missing}. "
-            "Update app/core/prompt_templates.py to include all 13 required fields."
+            "Update app/core/prompt_templates.py to include all 14 required fields."
         )

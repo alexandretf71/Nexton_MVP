@@ -267,5 +267,82 @@
       ],
       "owner": "Full Team"
     }
-  ]
+  ],
+
+  "delivery_team": {
+    "roles": [
+      {
+        "role": "AI Engineering Lead",
+        "count": 1,
+        "seniority": "Lead",
+        "allocation": "Full-time",
+        "responsibilities": "Owns technical delivery end to end: architecture decisions, sprint planning, SAP access escalations, and weekly status reporting to the AI Division Director.",
+        "reports_to": "AI Division Director"
+      },
+      {
+        "role": "AI Engineer",
+        "count": 1,
+        "seniority": "Senior",
+        "allocation": "Full-time",
+        "responsibilities": "Builds the LLM extraction pipeline: prompt engineering, vision fallback for scanned PDFs, accuracy benchmarking against the labelled invoice set.",
+        "reports_to": "AI Engineering Lead"
+      },
+      {
+        "role": "Backend Engineer",
+        "count": 1,
+        "seniority": "Mid",
+        "allocation": "Full-time",
+        "responsibilities": "Implements the ingestion service, SAP PO matching integration, validation rules engine, and staging deployment pipeline.",
+        "reports_to": "AI Engineering Lead"
+      },
+      {
+        "role": "QA Analyst",
+        "count": 1,
+        "seniority": "Mid",
+        "allocation": "50%",
+        "responsibilities": "Owns the testing plan: builds the 200-invoice regression set, runs integration and E2E suites, coordinates clerk UAT in week 4.",
+        "reports_to": "AI Engineering Lead"
+      },
+      {
+        "role": "Solutions Designer",
+        "count": 1,
+        "seniority": "Mid",
+        "allocation": "50%",
+        "responsibilities": "Designs the exception review UI, runs clerk usability sessions, and documents the revised invoice workflow for the operations team.",
+        "reports_to": "AI Engineering Lead"
+      }
+    ],
+    "fulfillment_plan": [
+      {
+        "week": 1,
+        "role": "AI Engineering Lead",
+        "action": "INTERNAL_ALLOCATION",
+        "notes": "Allocated from the AI division bench at project kickoff; owns SAP access requests from day one."
+      },
+      {
+        "week": 1,
+        "role": "AI Engineer",
+        "action": "INTERNAL_ALLOCATION",
+        "notes": "Reassigned from the document-AI practice; prior OCR project experience shortens ramp-up."
+      },
+      {
+        "week": 2,
+        "role": "Backend Engineer",
+        "action": "CONTRACTOR",
+        "notes": "SAP RFC/BAPI integration is a scarce skill internally; 6-week contract scoped to the PO matching service."
+      },
+      {
+        "week": 2,
+        "role": "QA Analyst",
+        "action": "INTERNAL_ALLOCATION",
+        "notes": "Shared 50% with the support automation project; full availability secured for week 4 UAT."
+      },
+      {
+        "week": 3,
+        "role": "Solutions Designer",
+        "action": "INTERNAL_ALLOCATION",
+        "notes": "Joins when the exception review UI work starts; 50% allocation through parallel run."
+      }
+    ]
+  }
 }

@@ -61,6 +61,8 @@ class TestBlueprintGenerator:
         assert result.testing_plan
         assert result.executive_summary
         assert result.delivery_status_report
+        assert result.delivery_team.roles
+        assert result.delivery_team.fulfillment_plan
 
     async def test_injects_provider_name(self, generator, sample_request):
         result = await generator.generate(sample_request)

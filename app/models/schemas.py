@@ -97,6 +97,27 @@ class Milestone(BaseModel):
     owner: str
 
 
+class TeamRole(BaseModel):
+    role: str
+    count: int
+    seniority: str    # Junior / Mid / Senior / Lead
+    allocation: str   # e.g. "Full-time", "50%"
+    responsibilities: str
+    reports_to: str   # manager's role name; top role reports to "AI Division Director"
+
+
+class FulfillmentAction(BaseModel):
+    week: int         # aligned with delivery_status_report weeks
+    role: str
+    action: str       # HIRE / INTERNAL_ALLOCATION / CONTRACTOR
+    notes: str
+
+
+class DeliveryTeam(BaseModel):
+    roles: list[TeamRole]
+    fulfillment_plan: list[FulfillmentAction]
+
+
 # ── Primary output ────────────────────────────────────────────────────────────
 
 class BlueprintOutput(BaseModel):
@@ -113,6 +134,7 @@ class BlueprintOutput(BaseModel):
     testing_plan: list[TestCase]
     executive_summary: str
     delivery_status_report: list[Milestone]
+    delivery_team: DeliveryTeam
     # Metadata injected by the generator, not the LLM
     generated_at: datetime
     provider_used: str

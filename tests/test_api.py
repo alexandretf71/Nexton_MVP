@@ -31,7 +31,7 @@ class TestGenerateBlueprintEndpoint:
         response = client.post("/generate-blueprint", json=LOGISTICS_INVOICE)
         assert response.json()["success"] is True
 
-    def test_all_ten_sections_present(self, client):
+    def test_all_sections_present(self, client):
         data = client.post("/generate-blueprint", json=LOGISTICS_INVOICE).json()["data"]
         assert data["business_problem_summary"]
         assert data["ai_opportunity_classification"]
@@ -43,6 +43,8 @@ class TestGenerateBlueprintEndpoint:
         assert data["testing_plan"]
         assert data["executive_summary"]
         assert data["delivery_status_report"]
+        assert data["delivery_team"]["roles"]
+        assert data["delivery_team"]["fulfillment_plan"]
 
     def test_metadata_fields_present(self, client):
         data = client.post("/generate-blueprint", json=LOGISTICS_INVOICE).json()["data"]

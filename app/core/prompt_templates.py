@@ -58,6 +58,13 @@ SECTION-BY-SECTION GUIDANCE:
 - delivery_status_report: A 4–6 week delivery plan. Each week must list 2–4 concrete, \
   demo-able deliverables and a named owner role. Week 1 must always include a data/access \
   readiness task.
+- delivery_team: The team the AI division needs to deliver this solution. Define 4–7 roles \
+  with realistic headcount, seniority, and allocation for the project size. Every role's \
+  reports_to must reference another role in the list, except the top role which reports to \
+  "AI Division Director" — these relationships form the org chart. The fulfillment_plan states \
+  how and when each role is filled (HIRE, INTERNAL_ALLOCATION, or CONTRACTOR), with weeks \
+  aligned to delivery_status_report. Internal allocation should dominate for a 4–6 week MVP; \
+  reserve HIRE or CONTRACTOR for genuinely scarce skills and say why in notes.
 
 OUTPUT SCHEMA (all fields required):
 {
@@ -130,7 +137,27 @@ OUTPUT SCHEMA (all fields required):
       "deliverables": ["string"],
       "owner": "string"
     }
-  ]
+  ],
+  "delivery_team": {
+    "roles": [
+      {
+        "role": "string",
+        "count": 1,
+        "seniority": "Junior|Mid|Senior|Lead",
+        "allocation": "string",
+        "responsibilities": "string",
+        "reports_to": "string"
+      }
+    ],
+    "fulfillment_plan": [
+      {
+        "week": 1,
+        "role": "string",
+        "action": "HIRE|INTERNAL_ALLOCATION|CONTRACTOR",
+        "notes": "string"
+      }
+    ]
+  }
 }"""
 
 

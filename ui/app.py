@@ -32,10 +32,29 @@ st.markdown(
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
         }
 
-        /* ── Sidebar ── */
+        /* ── Sidebar — dark hero style, matches nexton.dev nav ── */
         [data-testid="stSidebar"] {
-            background-color: #FFFFFF !important;
-            border-right: 1px solid #E5E7EB;
+            background-color: #0B0F19 !important;
+            border-right: none;
+        }
+        [data-testid="stSidebar"] h1,
+        [data-testid="stSidebar"] h2,
+        [data-testid="stSidebar"] h3 {
+            color: #F9FAFB !important;
+        }
+        [data-testid="stSidebar"] p,
+        [data-testid="stSidebar"] li,
+        [data-testid="stSidebar"] label,
+        [data-testid="stSidebar"] [data-testid="stCaptionContainer"] {
+            color: #C9CED6 !important;
+        }
+        [data-testid="stSidebar"] hr {
+            border-color: #2A3040 !important;
+        }
+
+        /* ── Top accent bar — matches nexton.dev blue strip ── */
+        [data-testid="stAppViewContainer"] {
+            border-top: 6px solid #337BFF;
         }
 
         /* ── Typography ── */
@@ -139,19 +158,42 @@ def _load_asset_b64(path: str) -> str | None:
         return None
 
 
+def _build_org_chart_dot(roles: list[dict]) -> str:
+    # reports_to values without a matching role become synthesized root nodes,
+    # so an LLM that names an external manager still yields a valid chart.
+    def _esc(s: str) -> str:
+        return s.replace('"', '\\"')
+
+    role_names = {r["role"] for r in roles}
+    lines = [
+        "digraph org {",
+        "  rankdir=TB;",
+        '  node [shape=box, style="rounded,filled", fillcolor="#F1F6FF", '
+        'color="#337BFF", fontname="Inter", fontsize=11];',
+    ]
+    for parent in {r["reports_to"] for r in roles} - role_names:
+        lines.append(
+            f'  "{_esc(parent)}" [fillcolor="#172344", fontcolor="#FFFFFF"];'
+        )
+    for r in roles:
+        label = f"{_esc(r['role'])}\\n×{r['count']} · {_esc(r['seniority'])}"
+        lines.append(f'  "{_esc(r["role"])}" [label="{label}"];')
+        lines.append(f'  "{_esc(r["reports_to"])}" -> "{_esc(r["role"])}";')
+    lines.append("}")
+    return "\n".join(lines)
+
+
 # ── Sidebar ───────────────────────────────────────────────────────────────────
 with st.sidebar:
     _logo_b64 = _load_asset_b64(
-        os.path.join(os.path.dirname(__file__), "assets", "nexton_logo.svg")
+        os.path.join(os.path.dirname(__file__), "assets", "Nexton Logo_black.png")
     )
     if _logo_b64:
         st.markdown(
             f"""
-            <div style="display:flex;align-items:center;gap:0.55rem;padding:0.25rem 0;">
-                <img src="data:image/svg+xml;base64,{_logo_b64}"
-                     style="width:34px;height:34px;flex-shrink:0;">
-                <span style="font-family:'K2D',sans-serif;font-size:1.7rem;
-                             font-weight:700;color:#172344;line-height:1;">nexton</span>
+            <div style="padding:0.5rem 0 0.75rem 0;">
+                <img src="data:image/png;base64,{_logo_b64}"
+                     style="width:100%;display:block;">
             </div>
             """,
             unsafe_allow_html=True,
@@ -159,16 +201,33 @@ with st.sidebar:
     else:
         st.markdown("## Nexton")
 
+    _sidebar_photo_b64 = _load_asset_b64(
+        os.path.join(os.path.dirname(__file__), "assets", "Alexandretf_perfil_Jan_26.jfif")
+    )
+    _sidebar_photo_tag = (
+        f'<img src="data:image/jpeg;base64,{_sidebar_photo_b64}" '
+        'style="width:36px;height:36px;border-radius:50%;object-fit:cover;'
+        'flex-shrink:0;border:1.5px solid #DDDDDD;">'
+        if _sidebar_photo_b64 else ""
+    )
     st.markdown(
-        """
+        f"""
         <div style="margin: 0.5rem 0 1rem 0;">
             <p style="font-size: 0.7rem; font-weight: 700; letter-spacing: 0.12em;
                       text-transform: uppercase; color: #337BFF; margin-bottom: 0.25rem;">
                 AI Implementation Copilot
             </p>
-            <p style="font-size: 0.85rem; color: #666666; line-height: 1.5; margin: 0;">
-                Paste a messy business problem and receive a structured blueprint in seconds.
-            </p>
+            <div style="display:flex;align-items:center;gap:0.6rem;">
+                {_sidebar_photo_tag}
+                <p style="font-size:0.68rem;color:#AAAAAA;line-height:1.6;margin:0;">
+                    Developed by <strong style="color:#888888;">Alexandre T. F.</strong><br>
+                    <a href="mailto:alexandre@nexton.dev"
+                       style="color:#AAAAAA;text-decoration:none;letter-spacing:0.01em;">
+                        alexandre@nexton.dev
+                    </a>
+                    &nbsp;<span style="font-size:0.55rem;vertical-align:super;">®</span>
+                </p>
+            </div>
         </div>
         """,
         unsafe_allow_html=True,
@@ -213,48 +272,23 @@ with st.sidebar:
         st.error("API offline — start the FastAPI server first.")
 
 # ── Page header ───────────────────────────────────────────────────────────────
-_photo_b64 = _load_asset_b64(
-    os.path.join(os.path.dirname(__file__), "assets", "Alexandretf_perfil_Jan_26.jfif")
-)
-_photo_tag = (
-    f'<img src="data:image/jpeg;base64,{_photo_b64}" '
-    'style="width:36px;height:36px;border-radius:50%;object-fit:cover;'
-    'flex-shrink:0;border:1.5px solid #DDDDDD;">'
-    if _photo_b64 else ""
-)
 st.markdown(
-    f"""
-    <div style="display:flex;align-items:flex-start;justify-content:space-between;
-                gap:1.5rem;margin:0.5rem 0 1.5rem 0;">
-        <div>
-            <h1 style="font-family:'K2D',sans-serif;
-                       font-size:clamp(1.8rem,3.2vw,2.6rem); font-weight:800;
-                       line-height:1.15; color:#172344; letter-spacing:-0.02em;
-                       margin:0 0 0.5rem 0;">
-                Turn any business problem into<br>
-                <span style="background-color:#337BFF; color:#FFFFFF;
-                             padding:0.05em 0.2em; border-radius:6px;">
-                    an AI blueprint.
-                </span>
-            </h1>
-            <p style="color:#666666; font-size:1.05rem; margin:0;">
-                Describe the operational challenge. Receive a structured
-                13-section implementation plan in seconds.
-            </p>
-        </div>
-        <div style="flex-shrink:0;display:flex;align-items:center;gap:0.6rem;
-                    padding-top:0.4rem;">
-            <p style="font-size:0.68rem;color:#AAAAAA;line-height:1.6;margin:0;
-                      text-align:right;">
-                Developed by <strong style="color:#888888;">Alexandre T. F.</strong><br>
-                <a href="mailto:alexandre@zaigo.ai"
-                   style="color:#AAAAAA;text-decoration:none;letter-spacing:0.01em;">
-                    alexandre@zaigo.ai
-                </a>
-                &nbsp;<span style="font-size:0.55rem;vertical-align:super;">®</span>
-            </p>
-            {_photo_tag}
-        </div>
+    """
+    <div style="margin:0.5rem 0 1.5rem 0;">
+        <h1 style="font-family:'K2D',sans-serif;
+                   font-size:clamp(1.8rem,3.2vw,2.6rem); font-weight:800;
+                   line-height:1.15; color:#172344; letter-spacing:-0.02em;
+                   margin:0 0 0.5rem 0;">
+            Nexton AI Division<br>
+            <span style="background-color:#337BFF; color:#FFFFFF;
+                         padding:0.05em 0.2em; border-radius:6px;">
+                Blueprint planner
+            </span>
+        </h1>
+        <p style="color:#666666; font-size:1.05rem; margin:0;">
+            Describe the operational challenge. Receive a structured
+            14-section implementation plan in seconds.
+        </p>
     </div>
     """,
     unsafe_allow_html=True,
@@ -262,7 +296,7 @@ st.markdown(
 
 with st.form("blueprint_form"):
     business_problem = st.text_area(
-        "Business Problem *",
+        "Business Needs and Pain Points *",
         height=180,
         placeholder=(
             "Describe the operational challenge in your own words. "
@@ -343,7 +377,7 @@ if submitted:
         mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     )
 
-    # ── Tabs for 13 sections ──────────────────────────────────────────────────
+    # ── Tabs for 14 sections ──────────────────────────────────────────────────
     tabs = st.tabs([
         "📋 Diagnosis",
         "💢 Pain Points",
@@ -357,6 +391,7 @@ if submitted:
         "🧪 Testing",
         "📣 Exec Summary",
         "📊 Status Report",
+        "👥 Delivery Team",
         "🔍 Raw JSON",
     ])
 
@@ -438,5 +473,24 @@ if submitted:
                     st.markdown(f"- {d}")
 
     with tabs[12]:
+        st.markdown("### Delivery Team")
+        team = bp["delivery_team"]
+        for r in team["roles"]:
+            _role_title = f"**{r['role']}** ×{r['count']}  —  {r['seniority']} · {r['allocation']}"
+            with st.expander(_role_title):
+                st.markdown(r["responsibilities"])
+                st.caption(f"Reports to: {r['reports_to']}")
+
+        st.markdown("### Org Chart")
+        st.graphviz_chart(_build_org_chart_dot(team["roles"]), use_container_width=True)
+
+        st.markdown("### Fulfillment Plan")
+        _action_badge = {"HIRE": "🟣", "INTERNAL_ALLOCATION": "🔵", "CONTRACTOR": "🟠"}
+        for fa in team["fulfillment_plan"]:
+            badge = _action_badge.get(fa["action"], "⚪")
+            with st.expander(f"{badge} Week {fa['week']}: **{fa['role']}**  —  {fa['action']}"):
+                st.markdown(fa["notes"])
+
+    with tabs[13]:
         st.markdown("### Raw JSON Response")
         st.json(result)

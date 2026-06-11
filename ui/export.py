@@ -71,6 +71,33 @@ def _add_table(doc: Document, headers: list[str], rows: list[list[str]]) -> None
     doc.add_paragraph()
 
 
+def _add_org_chart_bullets(doc: Document, roles: list[dict]) -> None:
+    # reports_to values without a matching role act as roots (e.g. "AI Division Director").
+    role_names = {r.get("role") for r in roles}
+    children: dict[str, list[dict]] = {}
+    for r in roles:
+        children.setdefault(r.get("reports_to", ""), []).append(r)
+
+    bullet_styles = ["List Bullet", "List Bullet 2", "List Bullet 3"]
+    visited: set[str] = set()
+
+    def _walk(name: str, depth: int) -> None:
+        if name in visited:
+            return
+        visited.add(name)
+        for child in children.get(name, []):
+            style = bullet_styles[min(depth, len(bullet_styles) - 1)]
+            doc.add_paragraph(
+                f"{child.get('role')} (×{child.get('count')}, {child.get('seniority')})",
+                style=style,
+            )
+            _walk(child.get("role", ""), depth + 1)
+
+    for root in sorted(set(children) - role_names):
+        doc.add_paragraph(root, style="List Bullet")
+        _walk(root, 1)
+
+
 def generate_blueprint_docx(bp: dict) -> bytes:
     doc = Document()
     _add_document_header(doc)
@@ -194,6 +221,33 @@ def generate_blueprint_docx(bp: dict) -> bytes:
         )
         for deliverable in milestone.get("deliverables") or []:
             doc.add_paragraph(str(deliverable), style="List Bullet")
+
+    # ── 14. Delivery Team & Fulfillment Plan ──────────────────────────────────
+    _add_section_heading(doc, 14, "Delivery Team & Fulfillment Plan")
+    team = bp.get("delivery_team") or {}
+    roles = team.get("roles") or []
+    _add_table(
+        doc,
+        ["Role", "Count", "Seniority", "Allocation", "Reports To", "Responsibilities"],
+        [
+            [r.get("role"), r.get("count"), r.get("seniority"), r.get("allocation"),
+             r.get("reports_to"), r.get("responsibilities")]
+            for r in roles
+        ],
+    )
+
+    doc.add_paragraph("Org Chart", style="Heading 2")
+    _add_org_chart_bullets(doc, roles)
+
+    doc.add_paragraph("Fulfillment Plan", style="Heading 2")
+    _add_table(
+        doc,
+        ["Week", "Role", "Action", "Notes"],
+        [
+            [fa.get("week"), fa.get("role"), fa.get("action"), fa.get("notes")]
+            for fa in team.get("fulfillment_plan") or []
+        ],
+    )
 
     # ── Serialise to bytes ────────────────────────────────────────────────────
     buf = BytesIO()

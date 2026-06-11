@@ -129,6 +129,24 @@ class Milestone(BaseModel):
     title: str
     deliverables: List[str]
     owner: str
+
+class TeamRole(BaseModel):
+    role: str
+    count: int
+    seniority: str  # Junior / Mid / Senior / Lead
+    allocation: str  # e.g. "Full-time", "50%"
+    responsibilities: str
+    reports_to: str  # manager's role name; top role reports to "AI Division Director"
+
+class FulfillmentAction(BaseModel):
+    week: int  # aligned with delivery_status_report weeks
+    role: str
+    action: str  # HIRE / INTERNAL_ALLOCATION / CONTRACTOR
+    notes: str
+
+class DeliveryTeam(BaseModel):
+    roles: List[TeamRole]
+    fulfillment_plan: List[FulfillmentAction]
 ```
 
 ### 2.3 Primary Output Model
@@ -173,6 +191,9 @@ class BlueprintOutput(BaseModel):
 
     # Section 13
     delivery_status_report: List[Milestone]
+
+    # Section 14
+    delivery_team: DeliveryTeam
 
     # Metadata
     generated_at: datetime

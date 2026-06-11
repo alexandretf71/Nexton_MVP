@@ -169,6 +169,27 @@ Content-Type: application/json
       }
     ],
 
+    "delivery_team": {
+      "roles": [
+        {
+          "role": "AI Engineering Lead",
+          "count": 1,
+          "seniority": "Lead",
+          "allocation": "Full-time",
+          "responsibilities": "Owns technical delivery, architecture decisions, and weekly status reporting",
+          "reports_to": "AI Division Director"
+        }
+      ],
+      "fulfillment_plan": [
+        {
+          "week": 1,
+          "role": "AI Engineering Lead",
+          "action": "INTERNAL_ALLOCATION",
+          "notes": "Allocated from the AI division bench at project kickoff"
+        }
+      ]
+    },
+
     "generated_at": "2026-06-02T14:30:00Z",
     "provider_used": "anthropic",
     "model_id": "claude-sonnet-4-6"
