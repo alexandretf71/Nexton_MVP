@@ -19,6 +19,9 @@ class AnthropicLLMProvider(LLMProvider):
             message = await self._client.messages.create(
                 model=settings.MODEL_ID,
                 max_tokens=4096,
+                # Low temperature: blueprints for the same input should be stable,
+                # not creative rewrites on every run.
+                temperature=0.2,
                 # Cache the system prompt — it is constant across all requests.
                 system=[
                     {"type": "text", "text": system_prompt, "cache_control": {"type": "ephemeral"}}

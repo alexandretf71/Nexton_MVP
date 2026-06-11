@@ -19,6 +19,7 @@ class OpenAILLMProvider(LLMProvider):
             response = await self._client.chat.completions.create(
                 model=settings.OPENAI_MODEL_ID,
                 response_format={"type": "json_object"},
+                temperature=0.2,
                 messages=[
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_prompt},
