@@ -9,7 +9,8 @@ import streamlit as st
 sys.path.insert(0, os.path.dirname(__file__))
 from export import generate_blueprint_docx
 
-API_BASE = os.getenv("UI_API_BASE_URL", "http://localhost:8000")
+# rstrip: a trailing slash in the env var would produce "//health" URLs (404).
+API_BASE = os.getenv("UI_API_BASE_URL", "http://localhost:8000").rstrip("/")
 
 st.set_page_config(
     page_title="AI Implementation Copilot",
