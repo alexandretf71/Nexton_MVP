@@ -1,10 +1,10 @@
 # Development Summary
 
-## AI Implementation Copilot — Zaigo MVP
+## AI Implementation Copilot — Nexton MVP
 
 **Version:** 1.3
 **Date:** 2026-06-04
-**Repository:** [github.com/alexandretf71/Zaigo-MVP---AI-Implementation-Copilot](https://github.com/alexandretf71/Zaigo-MVP---AI-Implementation-Copilot)
+**Repository:** [github.com/alexandretf71/Nexton_MVP](https://github.com/alexandretf71/Nexton_MVP)
 
 Inspiration:
 
@@ -124,7 +124,7 @@ Runs the full suite against `MockLLMProvider`. The `--cov-fail-under=80` flag is
 **docker-build job** (main only) — `docker build -t ai-copilot-api .`
 Confirms the production image builds cleanly after every merge.
 
-**Render.com auto-deploy.** Both cloud services (`zaigo-api`, `zaigo-ui`) redeploy automatically on every push to `main` via the GitHub integration — no manual deployment steps after initial setup.
+**Render.com auto-deploy.** Both cloud services (`nexton-api`, `nexton-ui`) redeploy automatically on every push to `main` via the GitHub integration — no manual deployment steps after initial setup.
 
 ---
 

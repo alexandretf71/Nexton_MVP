@@ -4,7 +4,6 @@ import sys
 
 import httpx
 import streamlit as st
-import streamlit.components.v1 as components
 
 # ui/export.py lives alongside app.py — ensure its directory is on the path
 sys.path.insert(0, os.path.dirname(__file__))
@@ -19,48 +18,47 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# ── Brand styles — aligned to zaigo.ai visual identity ───────────────────────
+# ── Brand styles — aligned to nexton.dev visual identity ─────────────────────
 st.markdown(
     """
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=K2D:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
 
         /* ── Base ── */
         html, body,
         [data-testid="stAppViewContainer"],
         [data-testid="stMain"] {
-            background-color: #F4F1EC !important;
+            background-color: #F9FAFB !important;
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
         }
 
         /* ── Sidebar ── */
         [data-testid="stSidebar"] {
             background-color: #FFFFFF !important;
-            border-right: 1px solid #E5E0D8;
+            border-right: 1px solid #E5E7EB;
         }
 
         /* ── Typography ── */
-        h1 {
-            color: #1A1A1A !important;
-            font-weight: 900 !important;
-            letter-spacing: -0.03em !important;
-            line-height: 1.1 !important;
-        }
-        h2, h3 {
-            color: #1A1A1A !important;
-            font-weight: 700 !important;
+        h1, h2, h3 {
+            font-family: 'K2D', 'Inter', system-ui, sans-serif !important;
+            color: #172344 !important;
             letter-spacing: -0.02em !important;
         }
+        h1 {
+            font-weight: 800 !important;
+            line-height: 1.1 !important;
+        }
+        h2, h3 { font-weight: 700 !important; }
         p, li { color: #444444; }
-        label { color: #1A1A1A !important; font-weight: 500; }
+        label { color: #172344 !important; font-weight: 500; }
 
-        /* ── Primary button — red pill (matches Zaigo CTA style) ── */
+        /* ── Primary button — blue (matches Nexton CTA style) ── */
         .stButton > button,
         [data-testid="stFormSubmitButton"] > button {
-            background-color: #E8412E !important;
+            background-color: #337BFF !important;
             color: #FFFFFF !important;
             border: none !important;
-            border-radius: 50px !important;
+            border-radius: 8px !important;
             font-weight: 700 !important;
             font-size: 1rem !important;
             padding: 0.6rem 2rem !important;
@@ -68,7 +66,7 @@ st.markdown(
         }
         .stButton > button:hover,
         [data-testid="stFormSubmitButton"] > button:hover {
-            background-color: #C8301E !important;
+            background-color: #0051E5 !important;
             border: none !important;
         }
 
@@ -76,22 +74,22 @@ st.markdown(
         .stTextArea textarea,
         .stTextInput input {
             background-color: #FFFFFF !important;
-            color: #1A1A1A !important;
-            border: 1.5px solid #D5CFC5 !important;
+            color: #172344 !important;
+            border: 1.5px solid #D6DEE8 !important;
             border-radius: 8px !important;
         }
         .stTextArea textarea:focus,
         .stTextInput input:focus {
-            border-color: #E8412E !important;
-            box-shadow: 0 0 0 2px rgba(232, 65, 46, 0.15) !important;
+            border-color: #337BFF !important;
+            box-shadow: 0 0 0 2px rgba(51, 123, 255, 0.15) !important;
         }
 
         /* ── Selectbox ── */
         [data-testid="stSelectbox"] > div > div {
             background-color: #FFFFFF !important;
-            border: 1.5px solid #D5CFC5 !important;
+            border: 1.5px solid #D6DEE8 !important;
             border-radius: 8px !important;
-            color: #1A1A1A !important;
+            color: #172344 !important;
         }
 
         /* ── Tabs ── */
@@ -100,15 +98,15 @@ st.markdown(
             font-weight: 500;
         }
         .stTabs [aria-selected="true"] {
-            color: #E8412E !important;
-            border-bottom-color: #E8412E !important;
+            color: #337BFF !important;
+            border-bottom-color: #337BFF !important;
             font-weight: 700 !important;
         }
 
         /* ── Expanders ── */
         [data-testid="stExpander"] {
             background-color: #FFFFFF !important;
-            border: 1px solid #E5E0D8 !important;
+            border: 1px solid #E5E7EB !important;
             border-radius: 8px !important;
             margin-bottom: 6px;
         }
@@ -116,17 +114,17 @@ st.markdown(
         /* ── Form card ── */
         [data-testid="stForm"] {
             background-color: #FFFFFF;
-            border: 1px solid #E5E0D8;
+            border: 1px solid #E5E7EB;
             border-radius: 12px;
             padding: 1.5rem;
         }
 
         /* ── Metrics ── */
-        [data-testid="stMetricLabel"] { color: #888888 !important; font-weight: 500; }
-        [data-testid="stMetricValue"] { color: #1A1A1A !important; font-weight: 800; }
+        [data-testid="stMetricLabel"] { color: #6B7280 !important; font-weight: 500; }
+        [data-testid="stMetricValue"] { color: #172344 !important; font-weight: 800; }
 
         /* ── Dividers ── */
-        hr { border-color: #E5E0D8 !important; }
+        hr { border-color: #E5E7EB !important; }
     </style>
     """,
     unsafe_allow_html=True,
@@ -143,17 +141,29 @@ def _load_asset_b64(path: str) -> str | None:
 
 # ── Sidebar ───────────────────────────────────────────────────────────────────
 with st.sidebar:
-    logo_path = os.path.join(os.path.dirname(__file__), "assets", "zaigo_logo.jfif")
-    try:
-        st.image(logo_path, use_container_width=True)
-    except Exception:
-        st.markdown("## Zaigo AI")
+    _logo_b64 = _load_asset_b64(
+        os.path.join(os.path.dirname(__file__), "assets", "nexton_logo.svg")
+    )
+    if _logo_b64:
+        st.markdown(
+            f"""
+            <div style="display:flex;align-items:center;gap:0.55rem;padding:0.25rem 0;">
+                <img src="data:image/svg+xml;base64,{_logo_b64}"
+                     style="width:34px;height:34px;flex-shrink:0;">
+                <span style="font-family:'K2D',sans-serif;font-size:1.7rem;
+                             font-weight:700;color:#172344;line-height:1;">nexton</span>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+    else:
+        st.markdown("## Nexton")
 
     st.markdown(
         """
         <div style="margin: 0.5rem 0 1rem 0;">
             <p style="font-size: 0.7rem; font-weight: 700; letter-spacing: 0.12em;
-                      text-transform: uppercase; color: #E8412E; margin-bottom: 0.25rem;">
+                      text-transform: uppercase; color: #337BFF; margin-bottom: 0.25rem;">
                 AI Implementation Copilot
             </p>
             <p style="font-size: 0.85rem; color: #666666; line-height: 1.5; margin: 0;">
@@ -202,130 +212,53 @@ with st.sidebar:
     except Exception:
         st.error("API offline — start the FastAPI server first.")
 
-    _photo_b64 = _load_asset_b64(
-        os.path.join(os.path.dirname(__file__), "assets", "Alexandretf_perfil_Jan_26.jfif")
-    )
-    _photo_tag = (
-        f'<img src="data:image/jpeg;base64,{_photo_b64}" '
-        'style="width:36px;height:36px;border-radius:50%;object-fit:cover;'
-        'flex-shrink:0;border:1.5px solid #DDDDDD;">'
-        if _photo_b64 else ""
-    )
-    st.markdown(
-        f"""
-        <div style="margin-top: 2rem; padding: 0 0.5rem;">
-            <div style="display:flex;align-items:center;gap:0.6rem;">
-                <div style="flex:1; text-align:left;">
-                    <p style="font-size:0.68rem;color:#AAAAAA;line-height:1.6;margin:0;">
-                        Developed by <strong style="color:#888888;">Alexandre T. F.</strong><br>
-                        <a href="mailto:alexandre@zaigo.ai"
-                           style="color:#AAAAAA;text-decoration:none;letter-spacing:0.01em;">
-                            alexandre@zaigo.ai
-                        </a>
-                        &nbsp;<span style="font-size:0.55rem;vertical-align:super;">®</span>
-                    </p>
-                </div>
-                {_photo_tag}
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-# ── Hero video card ───────────────────────────────────────────────────────────
-_assets_dir = os.path.join(os.path.dirname(__file__), "assets")
-_video_b64  = _load_asset_b64(os.path.join(_assets_dir, "Sovi_flying.mp4"))
-_poster_b64 = _load_asset_b64(os.path.join(_assets_dir, "SOVI_High3_bw_black.jpg"))
-
-if _video_b64:
-    _poster_attr = (
-        f'poster="data:image/jpeg;base64,{_poster_b64}"' if _poster_b64 else ""
-    )
-    components.html(
-        f"""<!DOCTYPE html>
-<html><head>
-<meta charset="utf-8">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap" rel="stylesheet">
-<style>
-  *, *::before, *::after {{ box-sizing: border-box; margin: 0; padding: 0; }}
-  body {{ background: transparent; overflow: hidden;
-          font-family: 'Inter', system-ui, -apple-system, sans-serif; }}
-  .hero-card {{
-    position: relative; width: 100%; height: 360px;
-    border-radius: 16px; background: #111; overflow: hidden;
-  }}
-  .hero-card video {{
-    position: absolute; inset: 0; width: 100%; height: 100%;
-    object-fit: cover; filter: grayscale(100%) brightness(0.75);
-  }}
-  .hero-text {{
-    position: absolute; bottom: 0; left: 0; padding: 2rem; z-index: 2;
-    text-shadow: 0 1px 6px rgba(0,0,0,0.7);
-  }}
-  .eyebrow {{
-    display: block; font-size: 0.7rem; font-weight: 700;
-    letter-spacing: 0.12em; text-transform: uppercase;
-    color: rgba(255,255,255,0.55); margin-bottom: 0.5rem;
-  }}
-  .title {{
-    font-size: 2rem; font-weight: 900;
-    letter-spacing: -0.025em; line-height: 1.15;
-    color: #ffffff; margin-bottom: 0.75rem;
-  }}
-  .highlight {{
-    background-color: #E8412E; color: #ffffff;
-    padding: 0.03em 0.18em; border-radius: 4px;
-  }}
-  .subtitle {{
-    font-size: 0.875rem; color: rgba(255,255,255,0.65); line-height: 1.5;
-  }}
-</style>
-</head>
-<body>
-<div class="hero-card">
-  <video autoplay muted loop playsinline {_poster_attr}>
-    <source src="data:video/mp4;base64,{_video_b64}" type="video/mp4">
-  </video>
-  <div class="hero-text">
-    <span class="eyebrow">AI Implementation Copilot</span>
-    <h1 class="title">
-      Turn any business problem into<br>
-      <span class="highlight">an AI blueprint.</span>
-    </h1>
-    <p class="subtitle">
-      Describe the operational challenge. Receive a structured 13-section<br>
-      implementation plan in seconds.
-    </p>
-  </div>
-</div>
-</body></html>""",
-        height=376,
-        scrolling=False,
-    )
-else:
-    # Fallback when video asset is absent (fresh clone, CI)
-    st.markdown(
-        """
-        <div style="margin: 1.5rem 0 2rem 0;">
-            <h1 style="font-size: clamp(2rem,4vw,3.2rem); font-weight: 900;
-                       line-height: 1.1; color: #1A1A1A; letter-spacing: -0.03em;
-                       margin-bottom: 0.75rem;">
+# ── Page header ───────────────────────────────────────────────────────────────
+_photo_b64 = _load_asset_b64(
+    os.path.join(os.path.dirname(__file__), "assets", "Alexandretf_perfil_Jan_26.jfif")
+)
+_photo_tag = (
+    f'<img src="data:image/jpeg;base64,{_photo_b64}" '
+    'style="width:36px;height:36px;border-radius:50%;object-fit:cover;'
+    'flex-shrink:0;border:1.5px solid #DDDDDD;">'
+    if _photo_b64 else ""
+)
+st.markdown(
+    f"""
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;
+                gap:1.5rem;margin:0.5rem 0 1.5rem 0;">
+        <div>
+            <h1 style="font-family:'K2D',sans-serif;
+                       font-size:clamp(1.8rem,3.2vw,2.6rem); font-weight:800;
+                       line-height:1.15; color:#172344; letter-spacing:-0.02em;
+                       margin:0 0 0.5rem 0;">
                 Turn any business problem into<br>
-                <span style="background-color: #E8412E; color: #FFFFFF;
-                             padding: 0.05em 0.2em; border-radius: 4px;">
+                <span style="background-color:#337BFF; color:#FFFFFF;
+                             padding:0.05em 0.2em; border-radius:6px;">
                     an AI blueprint.
                 </span>
             </h1>
-            <p style="color: #666666; font-size: 1.1rem; margin-top: 0.5rem;">
+            <p style="color:#666666; font-size:1.05rem; margin:0;">
                 Describe the operational challenge. Receive a structured
                 13-section implementation plan in seconds.
             </p>
         </div>
-        """,
-        unsafe_allow_html=True,
-    )
+        <div style="flex-shrink:0;display:flex;align-items:center;gap:0.6rem;
+                    padding-top:0.4rem;">
+            <p style="font-size:0.68rem;color:#AAAAAA;line-height:1.6;margin:0;
+                      text-align:right;">
+                Developed by <strong style="color:#888888;">Alexandre T. F.</strong><br>
+                <a href="mailto:alexandre@zaigo.ai"
+                   style="color:#AAAAAA;text-decoration:none;letter-spacing:0.01em;">
+                    alexandre@zaigo.ai
+                </a>
+                &nbsp;<span style="font-size:0.55rem;vertical-align:super;">®</span>
+            </p>
+            {_photo_tag}
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 
 with st.form("blueprint_form"):
     business_problem = st.text_area(

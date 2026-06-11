@@ -1,16 +1,22 @@
 # UI Assets
 
-The Zaigo logo is at `ui/assets/zaigo_logo.jfif`.
+The Nexton logo is at `ui/assets/nexton_logo.svg` (blue "N" mark).
+A white version for dark backgrounds is at `ui/assets/nexton_logo_white.svg`.
 
-Expected path used by Streamlit: `ui/assets/zaigo_logo.jfif`
+Expected path used by Streamlit: `ui/assets/nexton_logo.svg`
 
-## Brand Reference
+## Brand Reference (nexton.dev)
 
-| Element        | Value             |
-|----------------|-------------------|
-| Background     | `#1A1A1A`         |
-| Primary red    | `#E8412E`         |
-| Text / white   | `#FFFFFF`         |
-| Font (UI)      | System sans-serif |
+| Element         | Value                       |
+|-----------------|-----------------------------|
+| Primary blue    | `#337BFF`                   |
+| Hover blue      | `#0051E5`                   |
+| Deep navy       | `#172344`                   |
+| Page background | `#F9FAFB`                   |
+| Pale blue       | `#F1F6FF`                   |
+| Accent green    | `#38A75D`                   |
+| Headings font   | K2D (Google Fonts)          |
+| Body font       | Inter (Google Fonts)        |
 
-The logo is a dark-background square with a red tile containing the wordmark "z ai" in white.
+The logo is a blue "N" mark; the sidebar renders it next to the lowercase
+"nexton" wordmark set in K2D.

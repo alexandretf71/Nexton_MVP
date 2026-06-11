@@ -13,7 +13,7 @@
 - [ ] FastAPI server running: `uvicorn app.main:app` — check `http://localhost:8000/api/v1/health`
 - [ ] Streamlit UI running: `streamlit run ui/app.py` — check `http://localhost:8501`
 - [ ] LLM provider set to `anthropic` with valid API key (or `mock` for offline fallback)
-- [ ] Zaigo logo visible in the sidebar (`ui/assets/zaigo_logo.png` present)
+- [ ] Nexton logo visible in the sidebar (`ui/assets/nexton_logo.svg` present)
 - [ ] Browser window at `http://localhost:8501`, zoomed to 100%
 - [ ] Second browser tab open at `http://localhost:8000/docs` (for technical audience)
 - [ ] Problem A text copied to clipboard (logistics / invoice processing)

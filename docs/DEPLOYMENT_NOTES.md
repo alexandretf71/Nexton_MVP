@@ -58,8 +58,8 @@ The API key set via the UI header always takes precedence over the environment v
 ### 3.1 Clone and Install
 
 ```bash
-git clone https://github.com/alexandretf71/Zaigo.git
-cd Zaigo
+git clone https://github.com/alexandretf71/Nexton_MVP.git
+cd Nexton_MVP
 
 # Create virtual environment
 python -m venv .venv
@@ -203,7 +203,7 @@ docker build -t ai-copilot-api .
 
 No Docker push in MVP — cloud registry integration is a v1.1 task.
 
-**Repository:** `https://github.com/alexandretf71/Zaigo`
+**Repository:** `https://github.com/alexandretf71/Nexton_MVP`
 
 ---
 
@@ -238,7 +238,7 @@ mypy>=1.10.0
 ## 7. Project Structure Reference
 
 ```
-Zaigo/
+Nexton_MVP/
 ├── app/                    # FastAPI application
 │   ├── api/routes/         # Route handlers
 │   ├── core/               # Config + prompt templates
@@ -274,10 +274,10 @@ on the next request. For demos, open the URL ~1 min before the presentation to p
 
 1. Create a free account at [render.com](https://render.com) (GitHub login works).
 2. On the Render dashboard: **New → Blueprint**.
-3. Connect the GitHub repo `alexandretf71/Zaigo-MVP---AI-Implementation-Copilot`.
+3. Connect the GitHub repo `alexandretf71/Nexton_MVP`.
 4. Render reads `render.yaml` from the repo root and provisions two services automatically:
-   - `zaigo-api` — FastAPI backend
-   - `zaigo-ui` — Streamlit frontend
+   - `nexton-api` — FastAPI backend
+   - `nexton-ui` — Streamlit frontend
 
 ### 8.2 Post-deploy env var wiring (required — do this once)
 
@@ -285,8 +285,8 @@ After the first deploy, Render assigns public URLs to both services. Wire them t
 
 | Service | Variable | Value to set |
 |---|---|---|
-| `zaigo-api` | `UI_ORIGIN` | `https://zaigo-ui.onrender.com` |
-| `zaigo-ui` | `UI_API_BASE_URL` | `https://zaigo-api.onrender.com` |
+| `nexton-api` | `UI_ORIGIN` | `https://nexton-ui.onrender.com` |
+| `nexton-ui` | `UI_API_BASE_URL` | `https://nexton-api.onrender.com` |
 
 Set each variable in the service's **Environment** tab on the Render dashboard.
 Both services auto-redeploy when you save.
@@ -295,12 +295,12 @@ Both services auto-redeploy when you save.
 
 ```
 # API health check
-curl https://zaigo-api.onrender.com/health
+curl https://nexton-api.onrender.com/health
 
 # Expected: {"status":"ok","provider":"mock","version":"..."}
 ```
 
-Then open `https://zaigo-ui.onrender.com` in a browser — the Streamlit UI should load.
+Then open `https://nexton-ui.onrender.com` in a browser — the Streamlit UI should load.
 
 ### 8.4 Auto-deploy on push
 
@@ -313,7 +313,7 @@ The deployed app runs with `LLM_PROVIDER=mock` by default (no API key needed).
 Users can provide their own Anthropic or OpenAI keys via the sidebar — keys are passed as
 HTTP headers and never stored server-side. No env var changes are needed on Render for this.
 
-To switch the server default to a real provider, set in the `zaigo-api` service env vars:
+To switch the server default to a real provider, set in the `nexton-api` service env vars:
 ```
 LLM_PROVIDER=anthropic
 ANTHROPIC_API_KEY=sk-ant-...

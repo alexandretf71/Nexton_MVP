@@ -150,7 +150,7 @@ If a new env var is added:
 
 ## Git Workflow Rules
 
-- **Remote repository:** `https://github.com/alexandretf71/Zaigo`
+- **Remote repository:** `https://github.com/alexandretf71/Nexton_MVP`
 - **Branch from `main`.** Branch names: `feat/short-description`, `fix/short-description`,
   `docs/short-description`, `chore/short-description`.
 - **One logical change per commit.** Do not bundle a feature and a refactor in one commit.
@@ -232,20 +232,25 @@ Do not move it inside a function without updating the caching configuration in
 
 ## UI Branding
 
-The Streamlit interface uses Zaigo brand assets. Follow these rules when working on `ui/app.py`:
+The Streamlit interface uses Nexton (nexton.dev) brand assets. Follow these rules when working on `ui/app.py`:
 
-- **Logo file:** `ui/assets/zaigo_logo.jfif` — display at the top of the sidebar with `st.sidebar.image()`.
-- **Do not resize or crop the logo.** Use `use_container_width=True` so it scales naturally.
+- **Logo files:** `ui/assets/nexton_logo.svg` (blue "N" mark) and `ui/assets/nexton_logo_white.svg`
+  (white version for dark backgrounds). The sidebar renders the blue mark inline next to the
+  lowercase "nexton" wordmark.
+- **Fonts (Google Fonts):** K2D for headings and the wordmark, Inter for body text.
 - **Brand colors** (for custom CSS injected via `st.markdown`):
 
-  | Token           | Hex       | Usage                          |
-  |-----------------|-----------|--------------------------------|
-  | Background      | `#1A1A1A` | App background / sidebar       |
-  | Primary red     | `#E8412E` | Buttons, highlights, section headers |
-  | White           | `#FFFFFF` | Body text on dark backgrounds  |
+  | Token           | Hex       | Usage                             |
+  |-----------------|-----------|-----------------------------------|
+  | Primary blue    | `#337BFF` | Buttons, highlights, accents      |
+  | Hover blue      | `#0051E5` | Button hover state                |
+  | Deep navy       | `#172344` | Headings, wordmark                |
+  | Page background | `#F9FAFB` | App background                    |
+  | Pale blue       | `#F1F6FF` | Subtle tinted surfaces            |
+  | Accent green    | `#38A75D` | Positive / success accents        |
 
-- **Logo asset is not committed to git** if it is a binary file tracked by Git LFS, or it may be committed directly as a PNG under `ui/assets/`. Check `.gitignore` before adding.
-- If the logo file is missing at runtime, Streamlit should fall back gracefully (catch `FileNotFoundError`) and render the text "Zaigo AI" in its place — never crash the UI over a missing asset.
+- If the logo file is missing at runtime, Streamlit should fall back gracefully and render the
+  text "Nexton" in its place — never crash the UI over a missing asset.
 - Do not alter the logo (no filters, no overlays, no recoloring) in code.
 
 ---

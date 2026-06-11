@@ -1,14 +1,13 @@
 from io import BytesIO
-import os
 
 from docx import Document
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
-from docx.shared import Inches, Pt
+from docx.shared import Pt, RGBColor
 
-_LOGO_PATH = os.path.join(os.path.dirname(__file__), "assets", "zaigo_logo.jfif")
-_TAGLINE = "Specially developed quickly and intelligently by Zaigo"
+_BRAND_BLUE = RGBColor(0x33, 0x7B, 0xFF)
+_TAGLINE = "Specially developed quickly and intelligently by Nexton"
 
 
 def _add_document_header(doc: Document) -> None:
@@ -17,15 +16,13 @@ def _add_document_header(doc: Document) -> None:
     para = header.paragraphs[0]
     para.alignment = WD_ALIGN_PARAGRAPH.LEFT
 
-    try:
-        run_logo = para.add_run()
-        run_logo.add_picture(_LOGO_PATH, height=Inches(0.35))
-    except (FileNotFoundError, Exception):
-        run_name = para.add_run("Zaigo")
-        run_name.bold = True
-        run_name.font.size = Pt(11)
+    run_name = para.add_run("nexton")
+    run_name.bold = True
+    run_name.font.size = Pt(13)
+    run_name.font.name = "K2D"
+    run_name.font.color.rgb = _BRAND_BLUE
 
-    run_sep = para.add_run("    ")
+    para.add_run("    ")
 
     run_tag = para.add_run(_TAGLINE)
     run_tag.italic = True
