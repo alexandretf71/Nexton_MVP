@@ -45,7 +45,9 @@ SECTION-BY-SECTION GUIDANCE:
 - engineering_backlog: Produce 6–10 JIRA-style tickets ordered by dependency. Cover at minimum: \
   infrastructure/scaffold, the core AI/ML work, each external integration, a user-facing \
   component, and observability/logging. Assign realistic effort (XS=half day, S=1–2 days, \
-  M=3–5 days, L=1–2 weeks, XL=2+ weeks) and a delivery phase.
+  M=3–5 days, L=1–2 weeks, XL=2+ weeks) and a delivery phase. Estimate effort assuming \
+  AI-assisted development: scaffolding, CRUD, and test boilerplate land at the low end of \
+  ranges; reserve L/XL for integration unknowns and domain-specific accuracy work.
 - risks_and_assumptions: Identify 4–6 material risks spanning technical, data, organisational, \
   and timeline categories. Each mitigation must be a specific action with an owner or timing — \
   not a platitude like "monitor closely".
@@ -58,9 +60,13 @@ SECTION-BY-SECTION GUIDANCE:
 - delivery_status_report: A 4–6 week delivery plan. Each week must list 2–4 concrete, \
   demo-able deliverables and a named owner role. Week 1 must always include a data/access \
   readiness task.
-- delivery_team: The team the AI division needs to deliver this solution. Define 4–7 roles \
-  with realistic headcount, seniority, and allocation for the project size. Every role's \
-  reports_to must reference another role in the list, except the top role which reports to \
+- delivery_team: The team the AI division needs to deliver this solution. Assume the team \
+  works AI-assisted end to end (Claude Code and similar agentic coding tools): one engineer \
+  covers ground that traditionally took two or three, boilerplate and test scaffolding are \
+  near-free, and the scarce skills are problem decomposition, domain integration knowledge, \
+  and reviewing AI-generated code. Size the team lean accordingly — typically 3–5 roles, \
+  never padded with junior headcount for routine coding. Every role's reports_to must \
+  reference another role in the list, except the top role which reports to \
   "AI Division Director" — these relationships form the org chart. The fulfillment_plan states \
   how and when each role is filled (HIRE, INTERNAL_ALLOCATION, or CONTRACTOR), with weeks \
   aligned to delivery_status_report. Internal allocation should dominate for a 4–6 week MVP; \
