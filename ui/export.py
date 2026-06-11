@@ -224,6 +224,14 @@ def generate_blueprint_docx(bp: dict) -> bytes:
 
     # ── 14. Delivery Team & Fulfillment Plan ──────────────────────────────────
     _add_section_heading(doc, 14, "Delivery Team & Fulfillment Plan")
+    disclaimer = doc.add_paragraph()
+    run_disc = disclaimer.add_run(
+        "Note: team sizing assumes a deliberately reduced team optimized by "
+        "AI-assisted coding tools (e.g. Claude Code, GitHub Copilot, Cursor). "
+        "Traditional staffing for the same scope would be substantially larger."
+    )
+    run_disc.italic = True
+    run_disc.font.size = Pt(9)
     team = bp.get("delivery_team") or {}
     roles = team.get("roles") or []
     _add_table(

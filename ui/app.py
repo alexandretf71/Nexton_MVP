@@ -304,14 +304,12 @@ with st.form("blueprint_form"):
             "No need to structure it — just be specific."
         ),
     )
-    col1, col2 = st.columns(2)
-    with col1:
-        industry = st.text_input("Industry (optional)", placeholder="e.g. Logistics, Finance, HR")
-    with col2:
-        company_context = st.text_input(
-            "Company Context (optional)",
-            placeholder="e.g. ERP system, team size, tech stack",
-        )
+    company_context = st.text_area(
+        "Company Context (optional)",
+        height=180,
+        placeholder="e.g. ERP system, team size, tech stack",
+    )
+    industry = st.text_input("Industry (optional)", placeholder="e.g. Logistics, Finance, HR")
     submitted = st.form_submit_button("Generate Blueprint", use_container_width=True)
 
 # ── Blueprint generation ──────────────────────────────────────────────────────
@@ -474,6 +472,11 @@ if submitted:
 
     with tabs[12]:
         st.markdown("### Delivery Team")
+        st.info(
+            "ℹ️ Team sizing assumes a deliberately reduced team optimized by "
+            "AI-assisted coding tools (e.g. Claude Code, GitHub Copilot, Cursor). "
+            "Traditional staffing for the same scope would be substantially larger."
+        )
         team = bp["delivery_team"]
         for r in team["roles"]:
             _role_title = f"**{r['role']}** ×{r['count']}  —  {r['seniority']} · {r['allocation']}"
