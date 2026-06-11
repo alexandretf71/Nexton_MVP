@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: zaigo-api
+    env: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: LLM_PROVIDER
+        value: mock
+      - key: UI_ORIGIN
+        # Set to your zaigo-ui Render URL after first deploy, e.g.:
+        # https://zaigo-ui.onrender.com
+        sync: false
+
+  - type: web
+    name: zaigo-ui
+    env: docker
+    plan: free
+    dockerfilePath: ./Dockerfile.ui
+    envVars:
+      - key: UI_API_BASE_URL
+        # Set to your zaigo-api Render URL after first deploy, e.g.:
+        # https://zaigo-api.onrender.com
+        sync: false

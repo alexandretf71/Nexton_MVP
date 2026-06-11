@@ -1,0 +1,271 @@
+{
+  "business_problem_summary": "A logistics company is processing 3,000+ invoices monthly through a fully manual workflow that requires clerks to open PDFs, extract line items, cross-reference purchase orders in SAP S/4HANA, and manually flag discrepancies. This consumes two full-time employees, produces a 4% error rate, and causes downstream payment delays and vendor relationship friction. The root cause is the absence of a structured document ingestion and validation pipeline — basic OCR tools failed due to inconsistent PDF layouts across the vendor base.",
+
+  "operational_pain_points": [
+    "Two full-time clerks spend 100% of their working hours manually processing 3,000 invoices per month — a task that delivers no strategic value.",
+    "A 4% error rate on invoice extraction causes downstream payment delays averaging 3–5 days per affected vendor.",
+    "Existing OCR tools fail on 30–40% of invoices due to inconsistent vendor PDF layouts, requiring full manual re-processing.",
+    "There is no audit trail for manual decisions, making vendor dispute resolution slow and evidence-free.",
+    "Invoice processing backlog peaks at month-end, forcing overtime and creating cash flow forecasting uncertainty."
+  ],
+
+  "ai_opportunity_classification": [
+    {
+      "title": "Intelligent Document Extraction",
+      "description": "Use a vision-capable LLM to extract structured line-item data from heterogeneous PDF invoices regardless of layout, handling both native and scanned documents.",
+      "impact": "HIGH",
+      "feasibility": "HIGH"
+    },
+    {
+      "title": "Automated PO Matching",
+      "description": "Match extracted invoice data against SAP purchase orders using fuzzy matching and configurable business rule validation to flag discrepancies automatically.",
+      "impact": "HIGH",
+      "feasibility": "HIGH"
+    },
+    {
+      "title": "Exception Routing and Human-in-the-Loop Review",
+      "description": "Route low-confidence extractions and unresolved discrepancies to a human review queue, reducing clerk workload to exception handling only.",
+      "impact": "MEDIUM",
+      "feasibility": "HIGH"
+    }
+  ],
+
+  "recommended_solution_type": "HYBRID",
+
+  "suggested_architecture": "A hybrid OCR + API Integration architecture built around three components: (1) A document ingestion pipeline using a vision-capable LLM to extract structured data from PDF invoices, handling variable layouts and scanned documents with a confidence score per field. (2) A validation layer that calls the SAP S/4HANA REST API to match extracted data against open purchase orders, applying configurable tolerance thresholds for amounts and dates. (3) An exception management queue where low-confidence items are routed for human review via a lightweight web interface. The pipeline runs asynchronously, stores an audit log of every decision, and integrates with SAP via its standard OData REST APIs. Infrastructure is containerized and deployable to any cloud provider.",
+
+  "agentic_workflow": [
+    {
+      "step_number": 1,
+      "agent_name": "Document Ingestion Agent",
+      "action": "Receive uploaded PDF invoice and extract raw text and page structure",
+      "input": "Raw PDF file from upload endpoint",
+      "output": "Structured text with page layout metadata",
+      "tools_used": ["PyMuPDF", "Vision LLM API"]
+    },
+    {
+      "step_number": 2,
+      "agent_name": "Field Extraction Agent",
+      "action": "Parse extracted text into structured invoice fields with per-field confidence scores",
+      "input": "Structured text from Document Ingestion Agent",
+      "output": "JSON with vendor ID, PO number, line items, unit prices, totals, and invoice date",
+      "tools_used": ["LLM structured output", "Pydantic validator"]
+    },
+    {
+      "step_number": 3,
+      "agent_name": "PO Matching Agent",
+      "action": "Cross-reference extracted invoice fields against SAP open purchase orders",
+      "input": "Structured invoice JSON from Field Extraction Agent",
+      "output": "Match result with overall confidence score and itemised discrepancy list",
+      "tools_used": ["SAP S/4HANA OData REST API", "fuzzy matching library"]
+    },
+    {
+      "step_number": 4,
+      "agent_name": "Routing Agent",
+      "action": "Auto-approve high-confidence matches or route exceptions to the human review queue",
+      "input": "Match result and confidence score from PO Matching Agent",
+      "output": "Approved invoice record written to SAP, or flagged exception ticket in review queue",
+      "tools_used": ["Business rules engine", "async queue service", "email notification"]
+    }
+  ],
+
+  "data_requirements": [
+    {
+      "source": "Vendor PDF Invoices",
+      "description": "Monthly intake of 3,000+ invoices in heterogeneous PDF formats — both native digital and scanned. Required as the primary input to the extraction pipeline.",
+      "availability": "HIGH",
+      "notes": "Layouts vary significantly across the vendor base. A labelled sample of at least 200 invoices from the top 20 vendors by volume is required for model evaluation before go-live."
+    },
+    {
+      "source": "SAP S/4HANA Purchase Orders",
+      "description": "Open and partially-delivered PO records used to validate extracted invoice data against approved purchase commitments.",
+      "availability": "MEDIUM",
+      "notes": "API access requires a security approval from the SAP basis team — estimate 1–2 weeks lead time. A CSV export must be available as an interim fallback to unblock pipeline development."
+    },
+    {
+      "source": "Vendor Master Data",
+      "description": "Vendor IDs, common name aliases, and standard payment terms used to normalise vendor name extraction and resolve matching ambiguities.",
+      "availability": "HIGH",
+      "notes": "Available in SAP. Export once at project start and refresh monthly. No PII concerns."
+    }
+  ],
+
+  "integration_points": [
+    {
+      "system": "SAP S/4HANA",
+      "integration_type": "API",
+      "description": "Bidirectional: read open POs for invoice matching; write approved invoice records and trigger payment workflows back to SAP via OData REST APIs.",
+      "complexity": "HIGH"
+    },
+    {
+      "system": "Shared Invoice Inbox (Email)",
+      "integration_type": "Webhook",
+      "description": "Inbound: receive vendor invoice attachments via a monitored mailbox and trigger the ingestion pipeline automatically on arrival.",
+      "complexity": "LOW"
+    },
+    {
+      "system": "Exception Review UI",
+      "integration_type": "API",
+      "description": "Internal lightweight web application where clerks review flagged invoices, inspect per-field confidence scores, override AI decisions, and approve or reject.",
+      "complexity": "MEDIUM"
+    }
+  ],
+
+  "engineering_backlog": [
+    {
+      "id": "TICKET-001",
+      "title": "Project scaffold and CI pipeline",
+      "description": "Initialise repository, configure GitHub Actions with lint and test jobs, set up Docker Compose for local development. Ensures a clean foundation before feature work begins.",
+      "priority": "P0",
+      "effort": "S",
+      "phase": "Foundation"
+    },
+    {
+      "id": "TICKET-002",
+      "title": "PDF ingestion and OCR extraction service",
+      "description": "Build document ingestion service supporting native PDF text extraction and a vision-model fallback for scanned documents. Return structured text with page metadata.",
+      "priority": "P0",
+      "effort": "L",
+      "phase": "Core"
+    },
+    {
+      "id": "TICKET-003",
+      "title": "LLM field extraction with confidence scoring",
+      "description": "Design and iterate prompt templates for extracting vendor, PO number, line items, and totals. Add Pydantic validation and assign a confidence score (0–1) to each extracted field.",
+      "priority": "P0",
+      "effort": "M",
+      "phase": "Core"
+    },
+    {
+      "id": "TICKET-004",
+      "title": "SAP S/4HANA OData API integration",
+      "description": "Implement an authenticated REST client for SAP PO retrieval. Map extracted invoice fields to the SAP data model. Include error handling for auth failures and timeout.",
+      "priority": "P1",
+      "effort": "L",
+      "phase": "Core"
+    },
+    {
+      "id": "TICKET-005",
+      "title": "Exception review queue UI",
+      "description": "Build a lightweight web interface for clerks to review flagged invoices, inspect field-level confidence scores, override decisions, and approve or reject.",
+      "priority": "P1",
+      "effort": "M",
+      "phase": "Polish"
+    },
+    {
+      "id": "TICKET-006",
+      "title": "Audit log and reporting dashboard",
+      "description": "Store all processing results with timestamps and decision rationale. Build a dashboard showing daily throughput, auto-approval rate, error rate, and estimated cost savings.",
+      "priority": "P2",
+      "effort": "M",
+      "phase": "Polish"
+    }
+  ],
+
+  "risks_and_assumptions": [
+    {
+      "id": "RISK-001",
+      "category": "Data",
+      "description": "Invoice PDF formats vary significantly across the vendor base, including low-quality scans that degrade OCR accuracy.",
+      "likelihood": "HIGH",
+      "impact": "HIGH",
+      "mitigation": "Implement field-level confidence scoring; route low-confidence extractions to human review. Build vendor-specific extraction profiles for the top 20 vendors by volume."
+    },
+    {
+      "id": "RISK-002",
+      "category": "Technical",
+      "description": "SAP S/4HANA API access may require security approvals and custom configuration that extends the integration timeline.",
+      "likelihood": "MEDIUM",
+      "impact": "HIGH",
+      "mitigation": "Initiate SAP API onboarding in week 1. Define a CSV export fallback as an interim integration method to unblock pipeline development."
+    },
+    {
+      "id": "RISK-003",
+      "category": "Organizational",
+      "description": "Clerks may distrust auto-approval decisions or resist the new exception review workflow.",
+      "likelihood": "MEDIUM",
+      "impact": "MEDIUM",
+      "mitigation": "Involve one clerk in UAT from week 3. Run the new system in parallel with the manual process for two weeks before full cutover."
+    },
+    {
+      "id": "RISK-004",
+      "category": "Timeline",
+      "description": "LLM extraction accuracy may require multiple prompt iteration cycles before reaching the 95% threshold needed for production.",
+      "likelihood": "MEDIUM",
+      "impact": "MEDIUM",
+      "mitigation": "Reserve week 3 for prompt engineering and accuracy benchmarking against a labelled set of 200 representative invoices."
+    }
+  ],
+
+  "testing_plan": [
+    {
+      "id": "TEST-001",
+      "type": "Unit",
+      "description": "Test field extraction logic against 50 labelled invoice samples covering the top vendor PDF formats.",
+      "expected_outcome": "Field-level extraction accuracy >= 95% on the test set"
+    },
+    {
+      "id": "TEST-002",
+      "type": "Integration",
+      "description": "Test the end-to-end pipeline from PDF upload to SAP match result using mocked SAP API responses.",
+      "expected_outcome": "Pipeline completes without errors for all three invoice types: native PDF, scanned, and mixed-layout"
+    },
+    {
+      "id": "TEST-003",
+      "type": "E2E",
+      "description": "Process 100 real invoices from the prior month in a staging environment connected to the SAP sandbox.",
+      "expected_outcome": "Auto-approval rate >= 80%; discrepancy detection results match manual review outcomes"
+    },
+    {
+      "id": "TEST-004",
+      "type": "Manual",
+      "description": "Clerk UAT: two clerks process a batch of 30 invoices using the new exception review interface.",
+      "expected_outcome": "Task completion time reduced by >= 60%; no critical usability issues reported by either clerk"
+    }
+  ],
+
+  "executive_summary": "Your team currently processes 3,000 invoices per month manually — a workflow that occupies two full-time employees, produces a 4% error rate, and generates recurring vendor payment delays. This proposal replaces that manual workflow with an AI-powered invoice processing system that automatically reads any PDF format, validates data against your SAP purchase orders, and routes only exceptions to your team for review. Based on comparable deployments in logistics, you can expect to reduce invoice processing time by 70–80%, cut errors to under 0.5%, and free your clerks to focus on vendor relationships and dispute resolution. The system integrates with your existing SAP environment, runs on standard cloud infrastructure, and can be operational within 8 weeks. Estimated implementation investment: $60,000–$80,000. Estimated annual savings: $180,000–$220,000 in labour and error-related costs — a payback period of under five months.",
+
+  "delivery_status_report": [
+    {
+      "week": 1,
+      "title": "Foundation",
+      "deliverables": [
+        "Repository and CI pipeline configured",
+        "SAP API access request submitted",
+        "Sample invoice dataset collected and labelled (50 invoices)"
+      ],
+      "owner": "Engineering Lead"
+    },
+    {
+      "week": 2,
+      "title": "Core Extraction Pipeline",
+      "deliverables": [
+        "PDF ingestion service handling native and scanned documents",
+        "Field extraction with LLM working on native PDFs",
+        "Initial accuracy benchmark: >= 80% on labelled set"
+      ],
+      "owner": "AI Engineer"
+    },
+    {
+      "week": 3,
+      "title": "Accuracy Tuning and SAP Integration",
+      "deliverables": [
+        "Prompt engineering complete: >= 95% field-level accuracy",
+        "SAP PO matching service integrated and passing integration tests",
+        "End-to-end pipeline running in staging"
+      ],
+      "owner": "AI Engineer + Backend Engineer"
+    },
+    {
+      "week": 4,
+      "title": "Review UI, UAT, and Parallel Run",
+      "deliverables": [
+        "Exception review UI deployed to staging",
+        "Clerk UAT completed with sign-off",
+        "Parallel run with manual process initiated — monitoring auto-approval rate"
+      ],
+      "owner": "Full Team"
+    }
+  ]
+}
